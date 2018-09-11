@@ -11,10 +11,10 @@ var app = express();
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.header("Acces-Control-Allow-Methods","GET , POST , PUT, DELETE, OPTIONS");
+    res.header("Acces-Control-Allow-Methods","PUT, GET , POST ,  DELETE , OPTIONS");
     next();
 });
-  
+
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false })) 
@@ -29,9 +29,10 @@ var appRouteHospital = require('./routes/hospital');
 var appRouteMedico = require('./routes/medico');
 var busquedaRoutes = require('./routes/busqueda');
 var uploadRoutes = require('./routes/upload');
+var uploadRoutesImagenes = require('./routes/imagenes');
 
 // Conexión a la base de datos
-mongoose.connection.openUri('mongodb://admin:test@ds143242.mlab.com:43242/hospitaldb', (err, res) => {
+mongoose.connection.openUri('mongodb://admin:Passw0rd@ds143242.mlab.com:43242/hospitaldb', (err, res) => {
     if (err) throw err;
     console.log('Base de datos: \x1b[32m%s\x1b[0m', 'online');
 });
@@ -50,6 +51,7 @@ app.use('/hospital',appRouteHospital);
 app.use('/medico',appRouteMedico);
 app.use('/busqueda', busquedaRoutes);
 app.use('/upload', uploadRoutes);
+app.use('/imagenes', uploadRoutesImagenes);
 app.use('/',appRoutes);
 
 

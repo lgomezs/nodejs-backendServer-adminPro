@@ -16,7 +16,7 @@ var Usuario = require('../model/usuarios');
 /////////////////////////////////////////////////////////////////
 app.get('/', (req, res, next) => {
 
-    Usuario.find( {}, 'nombre email img role')
+    Usuario.find( {}, 'nombre email img role google')
         .exec(
                 (err,usuarios)=>{
                     if(err){
@@ -38,15 +38,17 @@ app.get('/', (req, res, next) => {
 //************** Metodo post , registrar usuario
 /////////////////////////////////////////////////////////////////
 
-app.post('/',mdAutenticacion.verificaToken,(req,res)=>{
+app.post('/',(req,res)=>{
     var body = req.body;
-       
+
+           
     var usuario =  new Usuario({
         nombre :  body.nombre,
         email : body.email,
         password : bcrypt.hashSync(body.password,10),
         img : body.img,
-        role: body.role
+        role: body.role,
+        google: body.google
     });
 
     usuario.save((err,usuarioGuardado)=>{
