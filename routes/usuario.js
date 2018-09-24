@@ -79,6 +79,8 @@ app.put('/:id',mdAutenticacion.verificaToken,(req,res)=>{
     var id = req.params.id;
     var body = req.body;
 
+    console.log("entreee");
+    
     Usuario.findById(id, (err, usuario) =>{
         
         if(err){

@@ -17,7 +17,7 @@ var Hospital = require('../model/hospital');
 app.get('/', (req, res, next) => {
 
     var desde = req.query.desde || 0;
-    desde= number(desde);
+    desde= Number(desde);
 
     Hospital.find({})
         .skip(desde)
@@ -50,9 +50,8 @@ app.get('/', (req, res, next) => {
 app.post('/',mdAutenticacion.verificaToken,(req,res)=>{
     var body = req.body;
     var hospital =  new Hospital({
-        nombre :     body.nombre,
-        img :        body.img,
-        usuario :    body.usuario._id      
+        nombre :     body.nombre,      
+        usuario:     req.usuario._id 
     });
 
     hospital.save((err,hospitalGuardado)=>{
@@ -67,8 +66,7 @@ app.post('/',mdAutenticacion.verificaToken,(req,res)=>{
 
         res.status(201).json({
             ok: true,
-            hospital: hospitalGuardado,
-            usuariotoken: req.usuario
+            hospital: hospitalGuardado           
         });
 
     });
