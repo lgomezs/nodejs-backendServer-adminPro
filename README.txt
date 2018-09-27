@@ -29,7 +29,10 @@ BACKEND NODEJS con expressjs, ONEXION A MONGO.
 		--install google auth
 			npm install google-auth-library@0.12.0 --save
 			
-			
+		--install cors (https://github.com/typicode/node-cors)
+		   npm install cors --save
+
+
 	Iniciar el proyecto:
 		npm start
 		
