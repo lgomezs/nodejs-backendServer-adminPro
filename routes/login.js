@@ -7,6 +7,7 @@ var SEED = require('../config/config').SEED;
 var app = express();
 
 var Usuario = require('../model/usuarios');
+var Menu = require('../model/menu');
 
 
 var GoogleAuth = require('google-auth-library');
@@ -15,6 +16,17 @@ var auth = new GoogleAuth;
 const GOOGLE_CLIENT_ID = require('../config/config').GOOGLE_CLIENT_ID;
 const GOOGLE_SECRET = require('../config/config').GOOGLE_SECRET;
 
+var mdAutenticacion = require('../middlewares/autenticacion');
+
+app.get("/renuevaToken", mdAutenticacion.verificaToken,(req,res)=>{ 
+
+    var token = jwt.sign({ usuario: req.usuario }, SEED, { expiresIn: 1800 }); 
+
+    res.status(200).json({
+        ok: true,
+        token: token
+    });
+});
 
 app.post('/', (req, res) => {
 
@@ -53,12 +65,19 @@ app.post('/', (req, res) => {
          // Crear un token!!!
         var token = jwt.sign({ usuario: usuarioDB }, SEED, { expiresIn: 1800 }); // 30 min
         
-        res.status(200).json({
-            ok: true,
-            usuario: usuarioDB,
-            token: token,          
-            id: usuarioDB._id
-        });
+        var menu = generarMenu(usuario.role);
+
+        menu.then(data=>{
+
+            res.status(200).json({
+                ok: true,
+                usuario: usuarioDB,
+                token: token,          
+                id: usuarioDB._id,
+                menu: data
+            });
+
+        });        
     })
 });
 
@@ -115,12 +134,20 @@ app.post('/google', (req, res) => {
 
                         var token = jwt.sign({ usuario: usuario }, SEED, { expiresIn: 1800 }); 
 
-                        res.status(200).json({
-                            ok: true,
-                            usuario: usuario,
-                            token: token,
-                            id: usuario._id
-                        });
+
+                        var menu = generarMenu(usuario.role);
+                        menu.then(data=>{
+
+                            console.log(data);
+
+                            res.status(200).json({
+                                ok: true,
+                                usuario: usuario,
+                                token: token,
+                                id: usuario._id,
+                                menu: data
+                            });
+                        });                       
                     }
 
                     // Si el usuario no existe por correo
@@ -146,16 +173,37 @@ app.post('/google', (req, res) => {
 
                         var token = jwt.sign({ usuario: usuarioDB }, SEED, { expiresIn: 1800 }); 
 
-                        res.status(200).json({
-                            ok: true,
-                            usuario: usuarioDB,
-                            token: token,
-                            id: usuarioDB._id
+                        var menu = generarMenu(usuario.role);
+
+                        menu.then(data=>{
+                            res.status(200).json({
+                                ok: true,
+                                usuario: usuarioDB,
+                                token: token,
+                                id: usuarioDB._id,
+                                menu: data
+                            });
                         });
+
+                        
                     });
                 }
             });
         });
 });
 
+
 module.exports = app;
+
+function generarMenu(ROL){  
+    return new Promise((resolve, reject) => {
+        Menu.find( {}, (err, menu) =>{
+            if(err){
+                console.log("error al obtener menu");
+                reject('error al obtener menu', err);
+            }
+            resolve(menu)           
+        });
+    });
+}
+   
